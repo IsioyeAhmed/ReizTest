@@ -204,7 +204,7 @@ export default class QuizApp extends React.Component<IQuizAppProps, IStates> {
     const spCache = spfi(this._sp).using(Caching({store:"session"}));
 
     
-     await spCache.web.lists.getByTitle("DataLoaders").items.add({ 
+     await spCache.web.lists.getByTitle("UserDetails").items.add({ 
                               
 			Title : $("#txtStaffName").val(),
 			DateOfBirth: this.state.selectedDOB,
