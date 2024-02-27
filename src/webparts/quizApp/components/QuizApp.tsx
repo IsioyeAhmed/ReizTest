@@ -339,7 +339,7 @@ export default class QuizApp extends React.Component<IQuizAppProps, IStates> {
 									<div className="col-lg-8">
                       <button type="button" className="btn btn-primary">
                             Pass <span className="badge badge-light">2</span>
-                            <span className="sr-only">unread messages</span>
+                            <span className="sr-only"></span>
                         </button>
                   </div>
 								</div>
