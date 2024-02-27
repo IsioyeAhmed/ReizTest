@@ -31,6 +31,7 @@ export interface IStates {
   selectedDOB:any;
   endPoints:any;
   countries:any;
+  availableZones:any;
 
 }
 
@@ -45,7 +46,7 @@ export default class QuizApp extends React.Component<IQuizAppProps, IStates> {
     super(props);
     this.state = {
           departments: [],
-          message: '',  endPoints: [], countries:[],
+          message: '',  endPoints: [], countries:[],availableZones:[],
           CurrentUser: null,
           extraListsURL:'',
           apiURL:'',
@@ -63,6 +64,7 @@ export default class QuizApp extends React.Component<IQuizAppProps, IStates> {
        await this._readAllEndpoints();
 
        await this.getCountries();
+       await this.getAvailableZones();
       
     }
     
@@ -133,6 +135,45 @@ export default class QuizApp extends React.Component<IQuizAppProps, IStates> {
 
      }
       
+     public  getAvailableZones =  async (): Promise<void> =>{
+
+      const URL = "https://timeapi.io/api/TimeZone/AvailableTimeZones";
+            
+      const httpClientOptions: IHttpClientOptions = {
+        headers: {
+          "Content-Type": "application/json"
+        },
+        method: "GET", 
+        mode: "no-cors", 
+       }; 
+
+       try {
+
+       // let fieldOptions  = [];	
+
+      
+
+       
+        let response = await this.props.context.httpClient  
+        .get(URL, HttpClient.configurations.v1,httpClientOptions);  
+        
+        let responeJson : any = await response.json();  
+
+       console.log(responeJson);
+  
+
+      
+          
+        //this.setState({ availableZones: fieldOptions.sort() });
+       
+        
+        } 
+        catch (error) {
+        console.log(error);
+        }
+
+
+     }
 
  
 
@@ -157,7 +198,26 @@ export default class QuizApp extends React.Component<IQuizAppProps, IStates> {
     $("#dvQuizQuestions").fadeIn(1000);
   }
  
-  private SaveData(): void {
+   private SaveData = async (): Promise<void> =>{
+  
+
+    const spCache = spfi(this._sp).using(Caching({store:"session"}));
+
+    
+     await spCache.web.lists.getByTitle("DataLoaders").items.add({ 
+                              
+			Title : $("#txtStaffName").val(),
+			DateOfBirth: this.state.selectedDOB,
+			PhoneNo :   $("#txtPhoneNo").val(),
+			Country : $("#drpCountries").val(),
+			IsTestTaken:  true
+		
+	}).then(m => {	
+
+console.log(m);  
+
+	});
+      
 
     $(".request").hide();      
     $("#dvResult").fadeIn(1000);
@@ -255,7 +315,7 @@ export default class QuizApp extends React.Component<IQuizAppProps, IStates> {
 									</div>
 									<div className="col-lg-4">
 										
-									<input type="text" className="form-control" id='txtHRISID' placeholder="Enter ID"/>
+									<input type="text" className="form-control" id='txtPhoneNo' placeholder="Enter No"/>
 									</div>
 									<div className="col-lg-2 d-flex justify-content-end text-end">
 										Date Of Birth
@@ -290,7 +350,7 @@ export default class QuizApp extends React.Component<IQuizAppProps, IStates> {
 											<option value="">Select your answer</option>
                     
 											{
-                            this.state.countries.sort().map((item: { key: any; value: any; }) => {
+                            this.state.availableZones.sort().map((item: { key: any; value: any; }) => {
                             return [
                             <option value={item.key}>{item.value}</option>
                             ];
@@ -314,7 +374,7 @@ export default class QuizApp extends React.Component<IQuizAppProps, IStates> {
                        what day of the year is 2021-03-14
 									</div>
 									<div className="col-lg-8">										
-							<input type="text" id='txtQuestion3' className="form-control" placeholder=""/>		
+				<input type="text" id='txtQuestion3' className="form-control" placeholder=""/>		
 									</div>							
 									
 								</div>
@@ -333,13 +393,15 @@ export default class QuizApp extends React.Component<IQuizAppProps, IStates> {
                   </div>
 								<div className="row align-items-center mb-5">
 									
-                    <div className="col-lg-4 d-flex justify-content-end text-end">
-                     RESULT :
-                    </div>
-									<div className="col-lg-8">
-                      <button type="button" className="btn btn-primary">
+                    
+									<div className="col-lg-12">
+                      <button type="button" className="btn btn-danger" id='btnshowDanger'>
+                            FAIL <span className="badge badge-light">0</span>
+                            <span className="sr-only"/>
+                        </button>
+                        <button type="button" className="btn btn-success" id='btnShowSucess' style= {{ display: 'none' }}>
                             Pass <span className="badge badge-light">2</span>
-                            <span className="sr-only"></span>
+                            <span className="sr-only"/>
                         </button>
                   </div>
 								</div>
