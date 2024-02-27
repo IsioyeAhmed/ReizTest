@@ -2,9 +2,11 @@
 
 ## Summary
 
-Short summary on functionality and used technologies.
+SharePoint app using SharePoint Framework (SPFx) that integrates with the TimeIO API. This app will enable users to input personal details, answer a series of quiz questions, and have their responses validated against TimeIO data.
 
-[picture of the solution in action, if possible]
+![image](https://github.com/IsioyeAhmed/ReizTest/assets/79019432/16bcb9d3-71c4-4fff-ad76-4c229665a4b3)
+
+
 
 ## Used SharePoint Framework Version
 
@@ -25,7 +27,7 @@ Short summary on functionality and used technologies.
 
 | Solution    | Author(s)                                               |
 | ----------- | ------------------------------------------------------- |
-| folder name | Author details (name, company, twitter alias with link) |
+| ReizQuiz | Ahmed Isioye|
 
 ## Version history
 
