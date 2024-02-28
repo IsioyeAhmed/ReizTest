@@ -1,7 +1,7 @@
 import * as React from 'react';
 import styles from './QuizApp.module.scss';
 import type { IQuizAppProps } from './IQuizAppProps';
-import { escape } from '@microsoft/sp-lodash-subset';
+import {  escape } from '@microsoft/sp-lodash-subset';
 import * as $ from 'jquery';
 import DatePicker from "react-datepicker";
 import * as moment from 'moment';
@@ -18,7 +18,6 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import 'react-bootstrap';
 import 'react-bootstrap-icons';
 import { HttpClient, HttpClientResponse, IHttpClientOptions } from '@microsoft/sp-http';
-
 
 require('bootstrap/dist/css/bootstrap.min.css');
 
@@ -134,6 +133,9 @@ export default class QuizApp extends React.Component<IQuizAppProps, IStates> {
 
 
      }
+
+     
+
       
      public  getAvailableZones =  async (): Promise<void> =>{
 
@@ -151,25 +153,26 @@ export default class QuizApp extends React.Component<IQuizAppProps, IStates> {
 
        // let fieldOptions  = [];	
 
-      
-
        
-        let response = await this.props.context.httpClient  
-        .get(URL, HttpClient.configurations.v1,httpClientOptions);  
+        await this.props.context.httpClient  
+        .get(URL, HttpClient.configurations.v1,httpClientOptions)
+        .then((response: HttpClientResponse) => {
+          return response.json();
+        })
+        .then((jsonResponse: any) => {
+          console.log(jsonResponse);
+          return jsonResponse;
+        }) as Promise<any>;  
         
-        let responeJson : any = await response.json();  
+       // let responeJson : any = await response.json();  
 
-       console.log(responeJson);
-  
-
-      
-          
+               
         //this.setState({ availableZones: fieldOptions.sort() });
        
         
         } 
         catch (error) {
-        console.log(error);
+          //console.log(error);
         }
 
 
@@ -200,24 +203,30 @@ export default class QuizApp extends React.Component<IQuizAppProps, IStates> {
  
    private SaveData = async (): Promise<void> =>{
   
-
-    const spCache = spfi(this._sp).using(Caching({store:"session"}));
-
+     //let web = Web(this.props.currentSiteURL);
+     const xTitle = $("#txtStaffName").val();
+     const xPhoneNo =  $("#txtPhoneNo").val();
+     const xCountry  = $("#drpCountries").val();
     
-     await spCache.web.lists.getByTitle("UserDetails").items.add({ 
+     const [batchedSP,execute] = this._sp.batched();
+
+     await batchedSP.web.lists.getByTitle("UserDetails").items.add({ 
                               
-			Title : $("#txtStaffName").val(),
+			Title : xTitle,
 			DateOfBirth: this.state.selectedDOB,
-			PhoneNo :   $("#txtPhoneNo").val(),
-			Country : $("#drpCountries").val(),
+			PhoneNo :  xPhoneNo,
+			Country : xCountry,
 			IsTestTaken:  true
 		
 	}).then(m => {	
 
-console.log(m);  
+    console.log(m);
 
-	});
-      
+    }).catch();
+
+
+   await execute();
+  
 
     $(".request").hide();      
     $("#dvResult").fadeIn(1000);
